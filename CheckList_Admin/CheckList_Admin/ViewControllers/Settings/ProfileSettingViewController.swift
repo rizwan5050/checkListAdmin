@@ -8,18 +8,25 @@
 import UIKit
 
 class ProfileSettingViewController: BaseViewController, TopBarDelegate {
+    
     //MARK: - IBOUTLETS
     @IBOutlet weak var imgProfile: UIImageView!
     @IBOutlet weak var viewShadow: UIView!
-    @IBOutlet weak var txtName: UITextField!
+    @IBOutlet weak var txtFirstName: UITextField!
+    @IBOutlet weak var txtLastName: UITextField!
     @IBOutlet weak var txtEmail: UITextField!
     @IBOutlet weak var txtPhone: UITextField!
+    
+    
+    //MARK: - OBJECT AND VERIABLES
+   
     
     //MARK: - OVERRIDE METHODS
     override func viewDidLoad() {
         super.viewDidLoad()
         self.viewShadow.dropShadow(radius: 5, opacity: 0.4)
         self.configureUserInfo()
+        self.setupAuthObserver()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -41,18 +48,59 @@ class ProfileSettingViewController: BaseViewController, TopBarDelegate {
     }
     
     @IBAction func actionSave(_ sender:UIButton){
-        
+        if self.checkValidation(){
+            var imageData: [String: Data]?
+            let params: ParamsAny = [DictKeys.first_name: self.txtFirstName.text!,
+                                     DictKeys.last_name: self.txtLastName.text!,
+                                     DictKeys.email: self.txtEmail.text!,
+                                     DictKeys.phone_number: self.txtPhone.text!,
+                                     DictKeys.Store_Id: Global.shared.user.storeID,
+                                     DictKeys.User_Id: Global.shared.user.id]
+            
+            imageData = [DictKeys.image: self.imgProfile.image!.jpegData(compressionQuality: 0.50)!]
+            self.ProfileUpdateApi(params: params, imageData: imageData)
+        }
     }
     
     //MARK: - FUNCTIONS
     func actionBack() {
         self.loadHomeController()
     }
+    
+    func checkValidation() -> Bool{
+        var message = ""
+        var isValid: Bool = true
+        let isValidEmail = Validations.emailValidation(self.txtEmail.text!)
+        
+        if self.txtFirstName.text!.isEmpty{
+            message = ValidationMessages.Empty_First_Name
+            isValid = false
+            
+        }else if self.txtLastName.text!.isEmpty{
+            message = ValidationMessages.Empty_Last_Name
+            isValid = false
+            
+        }else if self.txtPhone.text!.isEmpty{
+            message = ValidationMessages.emptyPhonNumber
+            isValid = false
+            
+        }else if !isValidEmail.isValid{
+            message = isValidEmail.message
+            isValid = false
+        }
+        if !isValid{
+            self.showAlertView(message: message)
+        }
+        return isValid
+    }
+    
     func configureUserInfo(){
         if let info = Global.shared.user{
-            self.txtName.text = info.firstName + " " + info.lastName
+            self.txtFirstName.text = info.firstName
+            self.txtLastName.text = info.lastName
             self.txtEmail.text = info.email
             self.txtPhone.text = info.phoneNumber
+            self.setImageWithUrl(imageView: self.imgProfile, url: info.image, placeholderImage: AssetNames.Box_Blue)
         }
     }
     
@@ -89,6 +137,25 @@ extension ProfileSettingViewController{
                         self.showAlertView(message: message, title: "", doneButtonTitle: "Ok") { (UIAlertAction) in
                             self.alertView?.close()
                         }
+                        
+                    }else{
+                        self.showAlertView(message: message)
+                    }
+                }
+            }
+        }
+    }
+    
+    func ProfileUpdateApi(params: ParamsAny, imageData: [String: Data]?){
+        self.startActivity()
+        GCD.async(.Background) {
+            LoginService.shared().profileUpdateApi(params: params, dict: imageData) { (message, success, json) in
+                GCD.async(.Main) {
+                    self.stopActivity()
+                    
+                    if success{
+                        self.showAlertView(message: message)
+                        self.configureUserInfo()
                         
                     }else{
                         self.showAlertView(message: message)

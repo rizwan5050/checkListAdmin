@@ -52,6 +52,7 @@ class CreateAdminAndTechViewController: BaseViewController, TopBarDelegate {
         self.configureDropShadow()
         self.getStoreListApi()
         self.configureDropDown()
+        self.setupAuthObserver()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -176,6 +177,7 @@ class CreateAdminAndTechViewController: BaseViewController, TopBarDelegate {
         }else if !isValidEmail.isValid{
             message = isValidEmail.message
             isValid = false
+            
         }else if self.txtStoreName.text!.isEmpty{
             message = ValidationMessages.Empty_Store_Name
             isValid = false
@@ -205,8 +207,6 @@ class CreateAdminAndTechViewController: BaseViewController, TopBarDelegate {
         self.isImageSelected = true
         picker.dismiss(animated: true, completion: nil)
     }
-    
-    
 }
 
 

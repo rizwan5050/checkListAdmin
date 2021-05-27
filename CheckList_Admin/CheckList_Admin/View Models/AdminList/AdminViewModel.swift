@@ -12,6 +12,7 @@ class AdminViewModel {
     
     var id: Int
     var storeID: Int
+    var isBlock: Int
     var firstName: String
     var lastName: String
     var email : String
@@ -22,9 +23,12 @@ class AdminViewModel {
     var loginType: String
     var createdAt: String
     
+    
+    
      init(){
         self.id = 0
         self.storeID = 0
+        self.isBlock = 0
         self.firstName = ""
         self.lastName = ""
         self.email = ""
@@ -40,6 +44,7 @@ class AdminViewModel {
         self.init()
         self.id = obj["id"].int ?? 0
         self.storeID = obj["store_id"].int ?? 0
+        self.isBlock = obj["is_block"].int ?? 0
         self.firstName = obj["first_name"].string ?? ""
         self.lastName = obj["last_name"].string ?? ""
         self.email = obj["email"].string ?? ""

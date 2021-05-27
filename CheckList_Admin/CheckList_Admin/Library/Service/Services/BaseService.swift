@@ -41,21 +41,26 @@ class BaseService {
         dataRequest?
             .validate(statusCode: 200...501)
             .responseJSON(completionHandler: { response in
-                switch response.result {
-                case .success(let value):
-                    let json = JSON(value)
-                    let parsedResponse = ResponseHandler.handleResponse(json)
-                    
-                    if parsedResponse.serviceResponseType == .Success {
-                        completion(parsedResponse.message,true, parsedResponse.swiftyJsonData, parsedResponse.serviceResponseType)
-                    }else {
-                        completion(parsedResponse.message,false,nil, parsedResponse.serviceResponseType)
+                if response.response?.statusCode == 401{
+                    NotificationCenter.default.post(name: NotificationName.UnAuthorizedAccess, object: nil)
+                }else{
+                    switch response.result {
+                    case .success(let value):
+                        let json = JSON(value)
+                        let parsedResponse = ResponseHandler.handleResponse(json)
+                        
+                        if parsedResponse.serviceResponseType == .Success {
+                            completion(parsedResponse.message,true, parsedResponse.swiftyJsonData, parsedResponse.serviceResponseType)
+                        }else{
+                            completion(parsedResponse.message,false,nil, parsedResponse.serviceResponseType)
+                        }
+                        
+                    case .failure(let error):
+                        let errorMessage:String = error.localizedDescription
+                        print(errorMessage)
+                        completion(PopupMessages.SomethingWentWrong, false,nil, .Failure)
                     }
                     
-                case .failure(let error):
-                    let errorMessage:String = error.localizedDescription
-                    print(errorMessage)
-                    completion(PopupMessages.SomethingWentWrong, false,nil, .Failure)
                 }
             })
     }
@@ -71,24 +76,28 @@ class BaseService {
         dataRequest?
             .validate(statusCode: 200...500)
             .responseJSON(completionHandler: { response in
-                switch response.result {
-                case .success(let value):
-                    let json = JSON(value)
-                    let parsedResponse = ResponseHandler.handleResponse(json)
-                    
-                    if parsedResponse.serviceResponseType == .Success {
-                        completion(parsedResponse.message,true, parsedResponse.swiftyJsonData, parsedResponse.serviceResponseType)
-                    }else {
-                        completion(parsedResponse.message,false,nil,parsedResponse.serviceResponseType)
+                
+                if response.response?.statusCode == 401{
+                    NotificationCenter.default.post(name: NotificationName.UnAuthorizedAccess, object: nil)
+                }else{
+                    switch response.result {
+                    case .success(let value):
+                        let json = JSON(value)
+                        let parsedResponse = ResponseHandler.handleResponse(json)
+                        
+                        if parsedResponse.serviceResponseType == .Success {
+                            completion(parsedResponse.message,true, parsedResponse.swiftyJsonData, parsedResponse.serviceResponseType)
+                        }else {
+                            completion(parsedResponse.message,false,nil,parsedResponse.serviceResponseType)
+                        }
+                        
+                    case .failure(let error):
+                        let errorMessage:String = error.localizedDescription
+                        print(errorMessage)
+                        completion(PopupMessages.SomethingWentWrong, false, nil, .Failure)
                     }
-                    
-                case .failure(let error):
-                    let errorMessage:String = error.localizedDescription
-                    print(errorMessage)
-                    completion(PopupMessages.SomethingWentWrong, false, nil, .Failure)
                 }
             })
-        
     }
     
     //MARK:- Multipart Post API Call
@@ -96,8 +105,8 @@ class BaseService {
         print(completeURL)
         print(params)
         print(dict as Any)
+        
         Alamofire.upload(multipartFormData: { multipartFormData in
-            
             
             for (key, value) in params {
                 let newValue = "\(value)"
@@ -115,31 +124,34 @@ class BaseService {
             case .success(let upload, _, _):
                 upload.responseJSON { (response) -> Void in
                     
-                    switch response.result {
-                    
-                    case .success(let value):
-                        let json = JSON(value)
-                        let parsedResponse = ResponseHandler.handleResponse(json)
+                    if response.response?.statusCode == 401{
+                        NotificationCenter.default.post(name: NotificationName.UnAuthorizedAccess, object: nil)
+                    }else{
+                        switch response.result {
                         
-                        if parsedResponse.serviceResponseType == .Success {
-                            completion(parsedResponse.message,true, parsedResponse.swiftyJsonData,parsedResponse.serviceResponseType)
-                        }else {
-                            completion(parsedResponse.message,false,nil, parsedResponse.serviceResponseType)
+                        case .success(let value):
+                            let json = JSON(value)
+                            let parsedResponse = ResponseHandler.handleResponse(json)
+                            
+                            if parsedResponse.serviceResponseType == .Success {
+                                completion(parsedResponse.message,true, parsedResponse.swiftyJsonData,parsedResponse.serviceResponseType)
+                            }else {
+                                completion(parsedResponse.message,false,nil, parsedResponse.serviceResponseType)
+                            }
+                            
+                        case .failure(let error):
+                            let errorMessage:String = error.localizedDescription
+                            print(errorMessage)
+                            completion(PopupMessages.SomethingWentWrong, false, nil, .Failure)
                         }
-                        
-                    case .failure(let error):
-                        let errorMessage:String = error.localizedDescription
-                        print(errorMessage)
-                        completion(PopupMessages.SomethingWentWrong, false, nil, .Failure)
                     }
-                    
                 }
             case .failure(let encodingError):
                 print(encodingError.localizedDescription)
             }
         })
-        
     }
+    
     //MARK: - POST API CALL WITH IMAGE
     func makePostAPICallImage(with completeURL:String, params:Parameters?,headers:HTTPHeaders? = nil, completion: @escaping (_ error: String, _ success: Bool, _ jsonData:Data? , _ responseType : Int?)->Void){
         

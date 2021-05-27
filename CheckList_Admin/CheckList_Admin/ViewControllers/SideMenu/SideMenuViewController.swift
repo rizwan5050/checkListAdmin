@@ -12,13 +12,19 @@ class SideMenuViewController: BaseViewController {
     //MARK: - IBOUTLETS
     @IBOutlet weak var lblTitle: UILabel!
     @IBOutlet weak var lblEmail: UILabel!
-    @IBOutlet weak var imgImageUser: UIImageView!
+    @IBOutlet weak var imgUser: UIImageView!
     
     //MARK: - OVERRIDE METHODS
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+       
     }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.refreshData()
+    }
+    
     //MARK: - IBACTION METHODS
     @IBAction func actionLogOut(_ sender: UIButton){
         self.showAlertView(message: PopupMessages.sureToLogout, title: ALERT_TITLE_APP_NAME, doneButtonTitle: LocalStrings.ok, doneButtonCompletion: { (UIAlertAction) in
@@ -28,7 +34,14 @@ class SideMenuViewController: BaseViewController {
         }
     }
     
-    
+    //MARK: - FUNCTIONS
+    func refreshData(){
+        if let info = Global.shared.user{
+            self.lblTitle.text = info.firstName + " " + info.lastName
+            self.lblEmail.text = info.email
+            self.setImageWithUrl(imageView: self.imgUser, url: info.image, placeholderImage: AssetNames.Box_Blue)
+        }
+    }
 }
 
 
@@ -63,14 +76,20 @@ extension SideMenuViewController: UITableViewDelegate, UITableViewDataSource{
             }else if indexPath.row == 4{
                 container.showSettingController()
             }
-            
         }
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 60
+        if Global.shared.user.loginType == LoginType.Admin{
+            if indexPath.row == 0 || indexPath.row == 3{
+                return 0
+            }else{
+                return 60
+            }
+        }else{
+            return 60
+        }
     }
-    
     
     
 }
@@ -96,4 +115,5 @@ extension SideMenuViewController{
             }
         }
     }
+    
 }

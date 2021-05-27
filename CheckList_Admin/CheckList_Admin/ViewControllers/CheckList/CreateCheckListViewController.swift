@@ -17,7 +17,7 @@ class CreateCheckListViewController: BaseViewController, TopBarDelegate {
     //MARK: - OVERRIDE METHODS
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        self.setupAuthObserver()
         // Do any additional setup after loading the view.
     }
     

@@ -14,12 +14,14 @@ class AdminListViewController: BaseViewController, TopBarDelegate {
     
     //MARK: - OBJECT AND VERIBALES
     var adminObject = AdminListViewModel()
+    var adminIndex: Int = -1
+    
     
     
     //MARK: - OVERRIDE METHODS
     override func viewDidLoad() {
         super.viewDidLoad()
-       
+        self.setupAuthObserver()
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -29,6 +31,7 @@ class AdminListViewController: BaseViewController, TopBarDelegate {
         }
         self.getAdminListApi()
     }
+    
     //MARK: - FUNCTIOND
     func actionBack() {
         self.loadHomeController()
@@ -69,7 +72,6 @@ extension AdminListViewController: UITableViewDelegate, UITableViewDataSource, A
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 150
-        
     }
     
     //MARK: - AdminListTableViewCell DELEGATE METHODS
@@ -89,6 +91,11 @@ extension AdminListViewController: UITableViewDelegate, UITableViewDataSource, A
         self.moveToCreateAdminAndTechnicianVC(isForEdit: true, adminObject: adminObj)
     }
     
+    func callBackActionBlockUnBlockAdmin(index: Int) {
+        let adminID = self.adminObject.adminList[index].id
+        self.adminIndex = index
+        self.blockUnblockTechnicianApi(param: [DictKeys.User_Id: adminID])
+    }
     
 }
 //MARK: - EXTENSION API CALLS
@@ -124,6 +131,30 @@ extension AdminListViewController{
                         self.showAlertView(message: message, title: LocalStrings.success)
                         self.getAdminListApi()
                        
+                    }else{
+                        self.showAlertView(message: message)
+                    }
+                }
+            }
+        }
+    }
+    
+    func blockUnblockTechnicianApi(param: ParamsAny){
+        self.startActivity()
+        GCD.async(.Background) {
+            AdminTechnicianService.shared().blockAdminOrTechnicianApi(params: param) { (message, success, adminInfo) in
+                GCD.async(.Main) {
+                    self.stopActivity()
+                    
+                    if success{
+                        self.showAlertView(message: message)
+                        if self.adminObject.adminList[self.adminIndex].isBlock == 0{
+                            self.adminObject.adminList[self.adminIndex].isBlock = 1
+                        }else{
+                            self.adminObject.adminList[self.adminIndex].isBlock = 0
+                        }
+                        self.viewTabel.reloadData()
+                        
                     }else{
                         self.showAlertView(message: message)
                     }

@@ -97,8 +97,8 @@ extension StoreListViewController: UITableViewDelegate, UITableViewDataSource, S
         self.moveToAddStoreVC(isFromEdit: true, storeInfo: object)
     }
     
-    
 }
+
 //MARK: - EXTENSION API CALLS
 extension StoreListViewController{
     func getStoreListApi(){

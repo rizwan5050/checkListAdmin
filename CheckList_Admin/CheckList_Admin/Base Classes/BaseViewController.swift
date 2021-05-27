@@ -321,11 +321,6 @@ public class BaseViewController : UIViewController,SWRevealViewControllerDelegat
         self.view.endEditing(true)
     }
     
-    
-    
-    
-    
-    
     func showAlertView(message:String) {
         showAlertView(message: message, title: ALERT_TITLE_APP_NAME)
     }
@@ -386,11 +381,33 @@ public class BaseViewController : UIViewController,SWRevealViewControllerDelegat
         let url = "https://maps.googleapis.com/maps/api/geocode/json?latlng=\(lat),\(lng)&key=\(APIKeys.googleApiKey)"
         return url
     }
+    
+    //MARK: - SETUP OBSERVER OF AUTHORIZATION
+    func setupAuthObserver(){
+        NotificationCenter.default.addObserver(self, selector: #selector(self.userUnAuthorized), name: NotificationName.UnAuthorizedAccess, object: nil)
+    }
+    deinit {
+        NotificationCenter.default.removeObserver(self, name: NotificationName.UnAuthorizedAccess, object: nil)
+    }
+    @objc private func userUnAuthorized(){
+        GCD.async(.Main) {
+            if let topController = UIApplication.shared.topViewController() as? BaseViewController {
+                topController.stopActivity()
+            }
+            
+            GCD.async(.Main, delay: 2) {
+                UIApplication.shared.endIgnoringInteractionEvents()
+                self.showAlertView(message: PopupMessages.Session_Expired, title: ALERT_TITLE_APP_NAME, doneButtonTitle: LocalStrings.ok) { (_) in
+                    self.logoutUserAccount()
+                }
+            }
+        }
+    }
 }
 
-//Mark:- SaveUserInfo
-
+//MARK: - EXTENSION USER INFO METHODS
 extension BaseViewController{
+    
     func moveToCreateAdminAndTechnicianVC(isForEdit: Bool, adminObject: AdminViewModel?){
         let vc = self.storyboard?.instantiateViewController(withIdentifier: ControllerIdentifier.CreateAdminAndTechViewController) as! CreateAdminAndTechViewController
         vc.isForEdit = isForEdit
@@ -403,7 +420,6 @@ extension BaseViewController{
         Global.shared.isLogedIn = true
         UserDefaultsManager.shared.isUserLoggedIn = true
         UserDefaultsManager.shared.userInfo = userInfo
-        
     }
     
     func loadHomeController(){
@@ -411,14 +427,16 @@ extension BaseViewController{
             container.showHomeController()
         }
     }
+    
     func logoutUserAccount() {
         Global.shared.isLogedIn = false
         UserDefaultsManager.shared.clearUserData()
         let storyboard = UIStoryboard(name: StoryboardNames.Registration, bundle: nil)
         let controller = storyboard.instantiateViewController(withIdentifier: ControllerIdentifier.LoginViewController) as! LoginViewController
-        if let container = self.navigationController?.parent as? SWRevealViewController {
+        if let container = self.navigationController?.parent as? MainContainerViewController {
             container.navigationController?.setViewControllers([controller], animated: true)
             container.navigationController?.popToRootViewController(animated: true)
+            
         }else if let container = self.parent as? SWRevealViewController {
             container.navigationController?.setViewControllers([controller], animated: true)
             container.navigationController?.popToRootViewController(animated: true)
@@ -446,18 +464,18 @@ extension BaseViewController: ChangePasswordPopUpViewControllerDelegate {
             self.objAlertVC = vc
             demoView.frame = CGRect(x:0, y:0, width: ScreenSize.SCREEN_WIDTH - 30, height: 350)
             vc.view.frame = CGRect(x:0, y:0, width: ScreenSize.SCREEN_WIDTH - 30, height: 350)
-            
             demoView.addSubview(vc.view)
-            
             self.alertView?.containerView = demoView
         }
-        
     }
     
     @objc func callBackActionSubmit(_ currentPassword: String, _ newPassword: String) {
         
     }
+    
     @objc func callBackActionClosePopup() {
         
     }
+    
+    
 }

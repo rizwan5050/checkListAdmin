@@ -69,6 +69,22 @@ class LoginService: BaseService {
         }
     }
     
+    //MARK:- PROFILE UPDATE API
+    func profileUpdateApi(params: Parameters,dict: [String: Data]?, completion: @escaping (_ error: String, _ success: Bool, _ userInfo: UserViewModel?) ->Void){
+        
+        let completeURL = EndPoints.BASE_URL + EndPoints.Profile_Update
+        self.makePostAPICallWithMultipart(with: completeURL, dict: dict, params: params, headers: self.getHeaders()) { (message, success, json, response) in
+            
+            if success{
+                let info = UserViewModel(obj: json![KEY_RESPONSE_DATA])
+                self.saveUserInfo(info)
+                completion(message, success, info)
+            }else{
+                completion(message, success, nil)
+            }
+        }
+    }
+    
     //MARK: - get token API
     func getToken(params:Parameters?,completion: @escaping (_ message: String, _ success: Bool , _ token : String)->Void){
         let completeURL = EndPoints.BASE_URL

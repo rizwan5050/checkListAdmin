@@ -22,6 +22,7 @@ class AddCategoryViewController: BaseViewController, TopBarDelegate{
     override func viewDidLoad() {
         super.viewDidLoad()
         self.configureCategory()
+        self.setupAuthObserver()
     }
     
     override func viewWillAppear(_ animated: Bool) {

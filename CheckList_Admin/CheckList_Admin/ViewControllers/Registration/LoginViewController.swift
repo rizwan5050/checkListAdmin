@@ -16,14 +16,15 @@ class LoginViewController: BaseViewController {
     
     //MARK: - OBJECT AND VERIBALES
     
+    
     //MARK: - OVERRIDE METHODS
     override func viewDidLoad() {
         super.viewDidLoad()
         self.viewEmail.dropShadow(radius: 5, opacity: 0.4)
         self.viewPassword.dropShadow(radius: 5, opacity: 0.4)
         #if DEBUG
-        self.txtEmail.text = "testAdmin1212@yopmail.com"
-        self.txtPassword.text = "123456"
+        self.txtEmail.text = "testAdmin12@gmail.com"
+        self.txtPassword.text = "12345678"
         #endif
        
     }
@@ -32,8 +33,7 @@ class LoginViewController: BaseViewController {
     @IBAction func actionLogin(_ sender: UIButton){
         if self.checkValidations(){
             self.doLoginApi(params: [DictKeys.email: self.txtEmail.text!,
-                                     DictKeys.password: self.txtPassword.text!,
-                                     DictKeys.login_type: "admin"])
+                                     DictKeys.password: self.txtPassword.text!])
         }
     }
     
@@ -62,6 +62,8 @@ class LoginViewController: BaseViewController {
         let vc = storyboard.instantiateViewController(withIdentifier: ControllerIdentifier.SWRevealViewController) as! SWRevealViewController
         self.navigationController?.pushViewController(vc, animated: true)
     }
+    
+    
     //MARK: - API CALL
     func doLoginApi(params: ParamsAny){
         self.startActivity()

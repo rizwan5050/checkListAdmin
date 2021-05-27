@@ -43,6 +43,16 @@ class AdminTechnicianService: BaseService{
         }
     }
     
+    //MARK:- BLOCK TECHNICIAN API
+    func blockAdminOrTechnicianApi(params: Parameters?,completion: @escaping (_ error: String, _ success: Bool, _ admin: AdminListViewModel?)->Void){
+        
+        let completeURL = EndPoints.BASE_URL + EndPoints.Block_User
+        self.makePostAPICall(with: completeURL, params: params, headers: self.getHeaders()) { (message, success, json, responseType) in
+           
+                completion(message,success, nil)
+        }
+    }
+    
     //MARK:- ADD ADMIN API
     func registerAdminAndTechnicianApi(params: Parameters,dict: [String: Data]?, completion: @escaping (_ error: String, _ success: Bool)->Void){
         

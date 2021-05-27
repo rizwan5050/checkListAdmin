@@ -19,7 +19,7 @@ class CategoryListViewController: BaseViewController, TopBarDelegate {
     //MARK: - OVERRIDE METHODS
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        self.setupAuthObserver()
     }
     
     override func viewWillAppear(_ animated: Bool) {

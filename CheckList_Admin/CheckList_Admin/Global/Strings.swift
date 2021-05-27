@@ -70,6 +70,7 @@ struct AssetNames {
 
 struct LoginType {
     static let Admin = "admin"
+    static let super_admin = "super_admin"
     static let Technician = "technician"
 }
 
@@ -101,6 +102,7 @@ struct ControllerIdentifier {
     static let AddStoreViewController = "AddStoreViewController"
     static let ForgotPasswordViewController = "ForgotPasswordViewController"
     static let UpdatePasswordViewController = "UpdatePasswordViewController"
+    static let TechnicianListViewController = "TechnicianListViewController"
 }
 
 struct ValidationMessages {
@@ -116,6 +118,7 @@ struct ValidationMessages {
     static let Empty_Store_Name = "Please enter store name"
     static let Empty_Store_Address = "Please enter store address"
     static let Empty_City_Name = "Please enter your city name"
+    static let Empty_Full_Name = "Please enter your name"
     static let emptyEmail                   = "Please enter your email"
     static let enterValidEmail              = "Please enter valid email"
     static let emptyPassword                = "Password field cannot be empty"
@@ -164,7 +167,7 @@ struct PopupMessages {
     static let sureToLogout                 = "Are you sure to logout"
     static let nothingToUpdate              = "Nothing to update"
     static let orderMarkedCompleted         = "Order marked completed successfullly"
-    static let unAuthorizedAccessMessage    = "Session expired, please login again"
+    static let Session_Expired    = "Session expired, please login again"
     static let cameraPermissionNeeded       = "Camera permission needed to scan QR Code. Goto settings to enable camera permission"
     static let SomethingWentWrong           = "Something went wrong, please check your internet connection or try again later!"
 }

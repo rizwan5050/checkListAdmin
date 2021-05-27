@@ -28,7 +28,7 @@ class UpdatePasswordViewController: BaseViewController {
         let params: ParamsAny = [DictKeys.email: self.txtEmail.text!,
                                  DictKeys.Pin_Code: self.txtPinCode.text!,
                                  DictKeys.New_Password: self.txtNewPassword.text!,
-                                 DictKeys.login_type: "admin"]
+                                 DictKeys.login_type: LoginType.Admin]
         self.updatePasswordApiCall(Params: params)
     }
     

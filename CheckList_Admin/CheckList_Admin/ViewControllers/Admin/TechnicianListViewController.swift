@@ -15,12 +15,12 @@ class TechnicianListViewController: BaseViewController, TopBarDelegate {
     
     //MARK: - OBJECT AND VERIBALES
     var technicianObject = AdminListViewModel()
-    
+    var blockIndex: Int = -1
     
     //MARK: - OVERRIDE METHODS
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        self.setupAuthObserver()
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -96,6 +96,11 @@ extension TechnicianListViewController: UITableViewDelegate, UITableViewDataSour
         let object = self.technicianObject.getAdminDetailAganistID(AdminID: techID)
         self.moveToAddTechnicianVC(isForEdit: true, techObj: object)
     }
+    func callBackActionBlockUnBlockTechnician(index: Int) {
+        let techID = self.technicianObject.adminList[index].id
+        self.blockIndex = index
+        self.blockUnblockTechnicianApi(param: [DictKeys.User_Id: techID])
+    }
     
     
 }
@@ -131,6 +136,30 @@ extension TechnicianListViewController{
                     if success{
                         self.showAlertView(message: message, title: LocalStrings.success)
                         self.getTechnicianListApi()
+                        
+                    }else{
+                        self.showAlertView(message: message)
+                    }
+                }
+            }
+        }
+    }
+    
+    func blockUnblockTechnicianApi(param: ParamsAny){
+        self.startActivity()
+        GCD.async(.Background) {
+            AdminTechnicianService.shared().blockAdminOrTechnicianApi(params: param) { (message, success, adminInfo) in
+                GCD.async(.Main) {
+                    self.stopActivity()
+                    
+                    if success{
+                        self.showAlertView(message: message)
+                        if self.technicianObject.adminList[self.blockIndex].isBlock == 0{
+                            self.technicianObject.adminList[self.blockIndex].isBlock = 1
+                        }else{
+                            self.technicianObject.adminList[self.blockIndex].isBlock = 0
+                        }
+                        self.viewTabel.reloadData()
                         
                     }else{
                         self.showAlertView(message: message)

@@ -72,6 +72,7 @@ struct EndPoints {
     static let Forgot_Password = "forgot_password"
     static let Update_Password = "update_password"
     static let Logout_User = "logout_user"
+    static let Block_User = "block_user"
 }
 
 //Default values for data types

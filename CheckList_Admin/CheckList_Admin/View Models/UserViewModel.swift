@@ -13,6 +13,7 @@ class UserViewModel: NSObject, NSCoding {
     
     var id: Int
     var storeID: Int
+    var isBlock: Int
     var firstName: String
     var lastName: String
     var email : String
@@ -21,10 +22,13 @@ class UserViewModel: NSObject, NSCoding {
     var loginType: String
     var token: String
     var createdAt: String
+    var fcmToken: String
+    
     
     override init(){
         self.id = 0
         self.storeID = 0
+        self.isBlock = 0
         self.firstName = ""
         self.lastName = ""
         self.email = ""
@@ -33,12 +37,14 @@ class UserViewModel: NSObject, NSCoding {
         self.loginType = ""
         self.token = ""
         self.createdAt = ""
+        self.fcmToken = ""
     }
     
     convenience init(obj: JSON){
         self.init()
         self.id = obj["id"].int ?? 0
         self.storeID = obj["store_id"].int ?? 0
+        self.isBlock = obj["is_block"].int ?? 0
         self.firstName = obj["first_name"].string ?? ""
         self.lastName = obj["last_name"].string ?? ""
         self.email = obj["email"].string ?? ""
@@ -47,11 +53,13 @@ class UserViewModel: NSObject, NSCoding {
         self.loginType = obj["login_type"].string ?? ""
         self.token = obj["token"].string ?? ""
         self.createdAt = obj["created_at"].string ?? ""
+        self.fcmToken = obj["fcm_token"].string ?? ""
     }
     
     func encode(with aCoder: NSCoder) {
         aCoder.encode(self.id, forKey: "id")
         aCoder.encode(self.storeID, forKey: "storeID")
+        aCoder.encode(self.isBlock, forKey: "isBlock")
         aCoder.encode(self.firstName, forKey: "firstName")
         aCoder.encode(self.lastName, forKey: "lastName")
         aCoder.encode(self.email, forKey: "email")
@@ -60,13 +68,14 @@ class UserViewModel: NSObject, NSCoding {
         aCoder.encode(self.loginType, forKey: "loginType")
         aCoder.encode(self.token, forKey: "token")
         aCoder.encode(self.createdAt, forKey: "createdAt")
+        aCoder.encode(self.fcmToken, forKey: "fcmToken")
     }
     
     required convenience init(coder aDecoder: NSCoder) {
         self.init()
-        
-        self.id = aDecoder.decodeObject(forKey: "id") as? Int ?? 0
-        self.storeID = aDecoder.decodeObject(forKey: "storeID") as? Int ?? 0
+        self.id = aDecoder.decodeInteger(forKey: "id")
+        self.storeID = aDecoder.decodeInteger(forKey: "storeID")
+        self.isBlock = aDecoder.decodeInteger(forKey: "isBlock")
         self.firstName = aDecoder.decodeObject(forKey: "firstName") as? String ?? ""
         self.lastName = aDecoder.decodeObject(forKey: "lastName") as? String ?? ""
         self.email = aDecoder.decodeObject(forKey: "email") as? String ?? ""
@@ -75,6 +84,7 @@ class UserViewModel: NSObject, NSCoding {
         self.loginType = aDecoder.decodeObject(forKey: "loginType") as? String ?? ""
         self.token = aDecoder.decodeObject(forKey: "token") as? String ?? ""
         self.createdAt = aDecoder.decodeObject(forKey: "createdAt") as? String ?? ""
+        self.fcmToken = aDecoder.decodeObject(forKey: "fcmToken") as? String ?? ""
     }
     
     

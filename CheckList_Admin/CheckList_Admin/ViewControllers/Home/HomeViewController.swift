@@ -22,7 +22,7 @@ class HomeViewController: BaseViewController {
         super.viewWillAppear(animated)
         if let container = self.mainContainer{
             container.setMenuButton(false, title: TitleNames.Home)
-            
+            self.setImageWithUrl(imageView: container.imgUser, url: Global.shared.user.image, placeholderImage: AssetNames.Box_Blue)
         }
     }
     
@@ -84,19 +84,23 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource, TaskCa
     
     //MARK: - DELEGATE METHODS
     func callBackMoveOnContoller(index: Int) {
+        
         if index == 0{
+            if Global.shared.user.loginType == LoginType.super_admin{
+                let storyboard = UIStoryboard(name: StoryboardNames.Admin, bundle: nil)
+                let vc = storyboard.instantiateViewController(withIdentifier: ControllerIdentifier.AdminListViewController) as! AdminListViewController
+                self.navigationController?.pushViewController(vc, animated: true)
+            }
+            
+        }else if index == 1{
             let storyboard = UIStoryboard(name: StoryboardNames.Admin, bundle: nil)
-            let vc = storyboard.instantiateViewController(withIdentifier: ControllerIdentifier.AdminListViewController) as! AdminListViewController
-            self.navigationController?.pushViewController(vc, animated: true)
-        }else if index == 3{
-            let vc = self.storyboard?.instantiateViewController(withIdentifier: ControllerIdentifier.CreateCheckListViewController) as! CreateCheckListViewController
+            let vc = storyboard.instantiateViewController(withIdentifier: ControllerIdentifier.TechnicianListViewController) as! TechnicianListViewController
             self.navigationController?.pushViewController(vc, animated: true)
         }else{
             let storyboard = UIStoryboard(name: StoryboardNames.Home, bundle: nil)
             let vc = storyboard.instantiateViewController(withIdentifier: ControllerIdentifier.CategoryListViewController) as! CategoryListViewController
             self.navigationController?.pushViewController(vc, animated: true)
         }
-        
     }
     
     
